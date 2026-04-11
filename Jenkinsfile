@@ -11,7 +11,6 @@ pipeline {
         stage('Stop Old Containers') {
             steps {
                 sh '''
-                    cd /home/ubuntu/luminaq-docker
                     docker-compose -f docker-compose-jenkins.yml down --remove-orphans || true
                 '''
             }
@@ -20,7 +19,6 @@ pipeline {
         stage('Start Application') {
             steps {
                 sh '''
-                    cd /home/ubuntu/luminaq-docker
                     docker-compose -f docker-compose-jenkins.yml up -d
                 '''
             }
@@ -39,7 +37,7 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment successful on port 8082'
+            echo 'Deployment successful on port 5001'
         }
         failure {
             echo 'Deployment failed'
