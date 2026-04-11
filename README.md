@@ -27,3 +27,4 @@ Open **http://localhost:3000**
 ## Tech Stack
 
 Express · MongoDB/Mongoose · Multer (image uploads) · Vanilla JS · CSS Masonry Grid
+# Jenkins Test
