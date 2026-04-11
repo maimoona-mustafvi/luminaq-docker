@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  mongodb-ci:
+    image: mongo:7
+    container_name: luminaq-mongo-ci
+    restart: unless-stopped
+    volumes:
+      - mongo-ci-data:/data/db
+    networks:
+      - luminaq-ci-net
+
+  app-ci:
+    image: node:20-alpine
+    container_name: luminaq-app-ci
+    working_dir: /app
+    command: sh -c "npm install && node server.js"
+    restart: unless-stopped
+    ports:
+      - "5001:5000"
+    environment:
+      PORT: 5000
+      MONGODB_URI: mongodb://mongodb-ci:27017/luminaq
+    volumes:
+      - /var/lib/jenkins/workspace/luminaq-pipeline:/app
+      - ci-uploads:/app/uploads
+    depends_on:
+      - mongodb-ci
+    networks:
+      - luminaq-ci-net
+
+volumes:
+  mongo-ci-data:
+  ci-uploads:
+
+networks:
+  luminaq-ci-net:
+    driver: bridge
