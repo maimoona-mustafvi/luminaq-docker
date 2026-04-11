@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LuminaQ — Quran &amp; Inspirational Quotes</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- ===== NAVBAR (always visible) ===== -->
+  <nav class="navbar">
+    <div class="nav-brand">✦ LuminaQ</div>
+    <div class="nav-actions">
+      <input type="text" id="searchInput" placeholder="Search quotes…" />
+      <!-- Logged-out actions -->
+      <div id="guestActions">
+        <button id="btnLogin" class="btn-primary">Sign In</button>
+      </div>
+      <!-- Logged-in actions -->
+      <div id="userActions" style="display:none">
+        <button id="btnMyQuotes" class="btn-ghost">My Quotes</button>
+        <span class="nav-user" id="navUser"></span>
+        <button id="btnNewQuote" class="btn-primary btn-add-quote" style="display:none">+ Add Quote</button>
+        <button id="btnLogout" class="btn-ghost">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== FILTERS (always visible) ===== -->
+  <section class="filters-bar">
+    <button class="filter-chip active" data-source="">All</button>
+    <button class="filter-chip" data-source="Quran">Quran</button>
+    <button class="filter-chip" data-source="Book">Book</button>
+    <button class="filter-chip" data-source="Movie">Movie</button>
+    <button class="filter-chip" data-source="Poem">Poem</button>
+    <button class="filter-chip" data-source="Other">Other</button>
+    <span class="separator">|</span>
+    <select id="moodFilter">
+      <option value="">All Moods</option>
+    </select>
+  </section>
+
+  <!-- ===== PINTEREST MASONRY GRID (always visible) ===== -->
+  <main class="masonry" id="quoteGrid"></main>
+
+  <!-- ===== AUTH MODAL ===== -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal auth-modal">
+      <button class="modal-close" data-close>&times;</button>
+      <h1 class="auth-brand">✦ LuminaQ</h1>
+      <p class="auth-tagline">Save &amp; collect your favourite quotes</p>
+
+      <form id="signinForm" class="auth-form">
+        <h2>Sign In</h2>
+        <input type="email" id="signinEmail" placeholder="Email" required />
+        <input type="password" id="signinPassword" placeholder="Password" required />
+        <button type="submit" class="btn-primary btn-full">Sign In</button>
+        <p class="auth-switch">Don't have an account? <a href="#" id="showSignup">Sign Up</a></p>
+        <p class="auth-error" id="signinError"></p>
+      </form>
+
+      <form id="signupForm" class="auth-form" style="display:none">
+        <h2>Sign Up</h2>
+        <input type="text" id="signupName" placeholder="Full Name" required />
+        <input type="email" id="signupEmail" placeholder="Email" required />
+        <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" required minlength="6" />
+        <button type="submit" class="btn-primary btn-full">Create Account</button>
+        <p class="auth-switch">Already have an account? <a href="#" id="showSignin">Sign In</a></p>
+        <p class="auth-error" id="signupError"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== MY QUOTES MODAL ===== -->
+  <div class="modal-overlay" id="myQuotesModal">
+    <div class="modal my-quotes-modal">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>My Quotes</h2>
+      <div class="masonry my-quotes-grid" id="myQuotesGrid"></div>
+    </div>
+  </div>
+
+  <!-- ===== CREATE / EDIT QUOTE MODAL ===== -->
+  <div class="modal-overlay" id="formModal">
+    <div class="modal form-modal">
+      <button class="modal-close" data-close>&times;</button>
+      <h2 id="formTitle">New Quote</h2>
+      <form id="quoteForm" enctype="multipart/form-data">
+        <input type="hidden" id="quoteId" />
+
+        <div class="image-drop" id="dropZone">
+          <input type="file" id="imageInput" name="image" accept="image/*" />
+          <div class="drop-placeholder" id="dropPlaceholder">
+            <span class="drop-icon">🖼️</span>
+            <p>Drag &amp; drop an image or <strong>click to upload</strong></p>
+          </div>
+          <img id="imagePreview" class="img-preview" />
+        </div>
+
+        <textarea id="quoteText" name="text" placeholder="Enter the quote…" rows="3" required></textarea>
+
+        <select id="sourceType" name="sourceType">
+          <option value="Quran">Quran</option>
+          <option value="Book">Book</option>
+          <option value="Movie">Movie</option>
+          <option value="Poem">Poem</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <input type="text" id="author" name="author" placeholder="Author" />
+
+        <div class="mood-selector">
+          <label>Mood</label>
+          <div class="mood-tags" id="moodTags">
+            <button type="button" class="mood-btn" data-mood="happy">😊 Happy</button>
+            <button type="button" class="mood-btn" data-mood="sad">😢 Sad</button>
+            <button type="button" class="mood-btn" data-mood="peaceful">🕊️ Peaceful</button>
+            <button type="button" class="mood-btn" data-mood="serene">🌿 Serene</button>
+            <button type="button" class="mood-btn" data-mood="angry">😠 Angry</button>
+            <button type="button" class="mood-btn" data-mood="motivational">🔥 Motivational</button>
+            <button type="button" class="mood-btn" data-mood="hopeful">🌅 Hopeful</button>
+            <button type="button" class="mood-btn" data-mood="grateful">🤲 Grateful</button>
+            <button type="button" class="mood-btn" data-mood="reflective">🪞 Reflective</button>
+            <button type="button" class="mood-btn" data-mood="lonely">🌧️ Lonely</button>
+            <button type="button" class="mood-btn" data-mood="inspired">✨ Inspired</button>
+            <button type="button" class="mood-btn" data-mood="calm">😌 Calm</button>
+          </div>
+        </div>
+
+        <div class="visibility-toggle">
+          <label class="toggle-label">
+            <input type="checkbox" id="isPublicToggle" checked />
+            <span class="toggle-text">Public — visible to everyone</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary btn-full">Save Quote</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== DETAIL / LIGHTBOX MODAL ===== -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal detail-modal">
+      <button class="modal-close" data-close>&times;</button>
+      <div class="detail-content" id="detailContent"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

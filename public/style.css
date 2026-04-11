@@ -1,0 +1,934 @@
+/* =============================================
+   LuminaQ — Pinterest-style Quote Platform
+   ============================================= */
+
+/* ---------- Reset & Base ---------- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f0ece3;
+  --card: #ffffff;
+  --accent: #1b6b4a;
+  --accent-light: #d4edda;
+  --text: #2c2c2c;
+  --text-muted: #7a7a7a;
+  --border: #e0dcd3;
+  --shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  --radius: 16px;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+/* Add Quote button in navbar */
+.btn-add-quote {
+  padding: 0.45rem 1.1rem;
+  font-size: 0.82rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.nav-user {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--accent);
+  padding: 0 0.25rem;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-actions input[type='text'] {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  outline: none;
+  font-size: 0.875rem;
+  width: 220px;
+  transition: border-color 0.2s;
+}
+
+.nav-actions input[type='text']:focus {
+  border-color: var(--accent);
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 24px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1.25rem;
+  border-radius: 24px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-ghost:hover {
+  background: var(--accent-light);
+}
+
+.btn-full {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  margin-top: 0.5rem;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  border-radius: 8px;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  opacity: 0.85;
+}
+
+/* ---------- Filter Bar ---------- */
+.filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 2rem;
+  flex-wrap: wrap;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 53px;
+  z-index: 99;
+}
+
+.filter-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 0.45rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-chip:hover:not(.active) {
+  background: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.filter-chip.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.separator {
+  color: var(--border);
+  font-size: 1.2rem;
+}
+
+#moodFilter {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.82rem;
+  background: var(--bg);
+  cursor: pointer;
+  font-weight: 500;
+  transition: border-color 0.2s;
+}
+
+#moodFilter:hover,
+#moodFilter:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* ---------- Masonry Grid (Pinterest) ---------- */
+.masonry {
+  columns: 4 280px;
+  column-gap: 1.25rem;
+  padding: 0.5rem 2rem 3rem;
+}
+
+.card {
+  break-inside: avoid;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 1rem 1.1rem;
+}
+
+.card-quote {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.card-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.card-source {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.card-moods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.mood-tag {
+  background: #f5f0e8;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+}
+
+/* Card actions — overlay on hover */
+.card-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+/* Save button on card hover */
+.card-save-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 5;
+}
+
+.card:hover .card-save-btn {
+  opacity: 1;
+}
+
+.card-save-btn:hover {
+  background: #155a3c;
+}
+
+.card-save-btn.saved {
+  background: #555;
+  opacity: 1;
+}
+
+.card-save-btn.saved:hover {
+  background: #c0392b;
+}
+
+/* Card author badge for user-created content */
+.card-author-badge {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* ---------- Modals ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+/* Auth modal */
+.auth-modal {
+  width: 400px;
+  max-width: 95vw;
+  text-align: center;
+}
+
+.auth-brand {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.auth-tagline {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1.75rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.auth-form h2 {
+  font-family: var(--font-display);
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.auth-form input {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.auth-form input:focus {
+  border-color: var(--accent);
+}
+
+.auth-switch {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.auth-switch a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-error {
+  color: #dc3545;
+  font-size: 0.8rem;
+  text-align: center;
+  min-height: 1rem;
+}
+
+/* Form modal */
+.form-modal {
+  width: 480px;
+  max-width: 95vw;
+}
+
+.form-modal h2 {
+  font-family: var(--font-display);
+  margin-bottom: 1rem;
+}
+
+#quoteForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#quoteForm input[type='text'],
+#quoteForm textarea,
+#quoteForm select {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#quoteForm input:focus,
+#quoteForm textarea:focus,
+#quoteForm select:focus {
+  border-color: var(--accent);
+}
+
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.form-row > * {
+  flex: 1;
+}
+
+/* Mood selector — Pinterest-style tags */
+.mood-selector label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.mood-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.mood-btn {
+  background: #f5f0e8;
+  border: 1.5px solid var(--border);
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+  color: var(--text);
+}
+
+.mood-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.mood-btn.selected {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Visibility toggle */
+.visibility-toggle {
+  padding: 0.25rem 0;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.toggle-label input[type='checkbox'] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+
+/* Image drop zone */
+.image-drop {
+  position: relative;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.image-drop:hover,
+.image-drop.dragover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.image-drop input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.drop-placeholder {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1rem;
+}
+
+.drop-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.drop-placeholder p {
+  font-size: 0.82rem;
+}
+
+.img-preview {
+  display: none;
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.img-preview.visible {
+  display: block;
+}
+
+/* Detail modal */
+.detail-modal {
+  width: 640px;
+  max-width: 95vw;
+  padding: 0;
+  overflow: hidden;
+}
+
+.detail-modal .modal-close {
+  z-index: 10;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.detail-img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-body {
+  padding: 1.5rem;
+}
+
+.detail-body .card-quote {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.detail-save-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: opacity 0.2s;
+}
+
+.detail-save-btn:hover {
+  opacity: 0.9;
+}
+
+/* ---------- Save to Board Modal ---------- */
+.save-board-modal {
+  width: 380px;
+  max-width: 95vw;
+}
+
+.save-board-modal h2 {
+  font-family: var(--font-display);
+  margin-bottom: 1rem;
+}
+
+.board-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.board-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.85rem;
+}
+
+.board-option:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.board-option.saved {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.board-option .board-count {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.board-option.saved .board-count {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.new-board-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.new-board-row input {
+  flex: 1;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  outline: none;
+  font-family: var(--font-body);
+}
+
+.new-board-row input:focus {
+  border-color: var(--accent);
+}
+
+/* ---------- My Boards Modal ---------- */
+.boards-modal {
+  width: 500px;
+  max-width: 95vw;
+}
+
+.boards-modal h2 {
+  font-family: var(--font-display);
+  margin-bottom: 1rem;
+}
+
+.my-boards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.board-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.board-card:hover {
+  border-color: var(--accent);
+  background: #fafaf7;
+}
+
+.board-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.board-card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.board-card-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.board-card-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* ---------- Board Detail Modal ---------- */
+.board-detail-modal {
+  width: 90vw;
+  max-width: 1100px;
+  max-height: 90vh;
+}
+
+.board-detail-modal h2 {
+  font-family: var(--font-display);
+  margin-bottom: 1rem;
+}
+
+.board-masonry {
+  columns: 3 240px;
+  column-gap: 1rem;
+  padding: 0;
+}
+
+/* ---------- My Quotes Modal ---------- */
+.my-quotes-modal {
+  width: 90vw;
+  max-width: 1100px;
+  max-height: 90vh;
+}
+
+.my-quotes-modal h2 {
+  font-family: var(--font-display);
+  margin-bottom: 1rem;
+}
+
+.my-quotes-grid {
+  columns: 3 240px;
+  column-gap: 1rem;
+  padding: 0;
+}
+
+/* ---------- Dashboard Modal ---------- */
+.dashboard-modal {
+  width: 500px;
+  max-width: 95vw;
+}
+
+.dashboard-modal h2 {
+  font-family: var(--font-display);
+  margin-bottom: 1rem;
+}
+
+.dashboard-modal h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.dash-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.stat-card {
+  background: var(--accent-light);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 100px;
+}
+
+.stat-card .num {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-card .label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.dash-latest {
+  list-style: none;
+}
+
+.dash-latest li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.dash-latest li:last-child {
+  border-bottom: none;
+}
+
+/* ---------- Empty State ---------- */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state .icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Nav user */
+.nav-user {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .masonry {
+    columns: 2;
+    padding: 0.5rem 1rem 2rem;
+  }
+  .navbar {
+    padding: 0.75rem 1rem;
+  }
+  .filters-bar {
+    padding: 0.75rem 1rem;
+  }
+  .board-masonry,
+  .my-quotes-grid {
+    columns: 2;
+  }
+}
+
+@media (max-width: 520px) {
+  .masonry {
+    columns: 1;
+  }
+  .nav-actions input[type='text'] {
+    width: 120px;
+  }
+  .form-row {
+    flex-direction: column;
+  }
+  .board-masonry,
+  .my-quotes-grid {
+    columns: 1;
+  }
+}
